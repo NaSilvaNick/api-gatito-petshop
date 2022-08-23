@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "./node_modules/.bin/eslint .",
+    "lint:fix": "./node_modules/.bin/eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,5 +26,8 @@
     "jsontoxml": "^1.0.1",
     "mysql2": "^2.3.3",
     "sequelize": "^6.19.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.22.0"
   }
 }
