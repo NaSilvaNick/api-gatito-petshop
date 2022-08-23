@@ -1,11 +1,9 @@
-import express from "express";
-import TabelaProduto from "./TabelaProduto.js";
-import Produto from "./Produto.js";
-import { SerializadorProduto } from "../../../Serializador.js";
+const roteador = require("express").Router({ mergeParams: true })
+const TabelaProduto = require("./TabelaProduto")
+const Produto = require("./Produto")
+const { SerializadorProduto } = require("../../../Serializador")
 
-const roteador = express.Router({ mergeParams: true});
-
-roteador.options("/", (requisicao,resposta) => {
+roteador.options("/", (requisicao, resposta) => {
     resposta
         .set("Access-Control-Allow-Methods", "GET, POST")
         .set("Access-Control-Allow-Headers", "Content-Type")
@@ -13,7 +11,7 @@ roteador.options("/", (requisicao,resposta) => {
         .end();
 });
 
-roteador.options("/:id", (requisicao,resposta) => {
+roteador.options("/:id", (requisicao, resposta) => {
     resposta
         .set("Access-Control-Allow-Methods", "GET, PUT, DELETE, HEAD")
         .set("Access-Control-Allow-Headers", "Content-Type")
@@ -21,7 +19,7 @@ roteador.options("/:id", (requisicao,resposta) => {
         .end();
 });
 
-roteador.options("/:id/diminuir-estoque", (requisicao,resposta) => {
+roteador.options("/:id/diminuir-estoque", (requisicao, resposta) => {
     resposta
         .set("Access-Control-Allow-Methods", "POST")
         .set("Access-Control-Allow-Headers", "Content-Type")
@@ -29,13 +27,13 @@ roteador.options("/:id/diminuir-estoque", (requisicao,resposta) => {
         .end();
 });
 
-roteador.get('/', async (requisicao,resposta) => {
+roteador.get('/', async (requisicao, resposta) => {
     const produtos = await TabelaProduto.listar(requisicao.fornecedor.id);
     const serializador = new SerializadorProduto(resposta.getHeader("Content-Type"));
     resposta.status(200).send(serializador.serializar(produtos));
 });
 
-roteador.head('/:id', async (requisicao,resposta,proximo) => {
+roteador.head('/:id', async (requisicao, resposta, proximo) => {
     try {
         const dados = {
             id: requisicao.params.id,
@@ -43,7 +41,7 @@ roteador.head('/:id', async (requisicao,resposta,proximo) => {
         }
         const produto = new Produto(dados);
         await produto.carregar()
-        
+
         const timestamp = new Date(produto.data_atualizacao).getTime();
 
         resposta
@@ -58,7 +56,7 @@ roteador.head('/:id', async (requisicao,resposta,proximo) => {
     }
 });
 
-roteador.get('/:id', async (requisicao,resposta,proximo) => {
+roteador.get('/:id', async (requisicao, resposta, proximo) => {
     try {
         const dados = {
             id: requisicao.params.id,
@@ -68,9 +66,9 @@ roteador.get('/:id', async (requisicao,resposta,proximo) => {
         await produto.carregar()
         const serializador = new SerializadorProduto(
             resposta.getHeader("Content-Type"),
-            ['preco','estoque','fornecedor','data_criacao','data_atualizacao','versao']
+            ['preco', 'estoque', 'fornecedor', 'data_criacao', 'data_atualizacao', 'versao']
         );
-        
+
         const timestamp = new Date(produto.data_atualizacao).getTime();
 
         resposta
@@ -84,11 +82,11 @@ roteador.get('/:id', async (requisicao,resposta,proximo) => {
     }
 });
 
-roteador.post('/', async (requisicao,resposta,proximo) => {
+roteador.post('/', async (requisicao, resposta, proximo) => {
     try {
         const idFornecedor = requisicao.fornecedor.id;
         const corpo = requisicao.body;
-        const dados = Object.assign({}, corpo, { fornecedor: idFornecedor});
+        const dados = Object.assign({}, corpo, { fornecedor: idFornecedor });
         const produto = new Produto(dados);
         await produto.criar();
         const serializador = new SerializadorProduto(resposta.getHeader("Content-Type"));
@@ -102,12 +100,12 @@ roteador.post('/', async (requisicao,resposta,proximo) => {
             .status(201)
             .send(serializador.serializar(produto));
 
-    } catch(error) {
+    } catch (error) {
         proximo(error);
     }
 });
 
-roteador.put("/:id", async (requisicao,resposta,proximo) => {
+roteador.put("/:id", async (requisicao, resposta, proximo) => {
     try {
         const dados = Object.assign(
             {},
@@ -134,7 +132,7 @@ roteador.put("/:id", async (requisicao,resposta,proximo) => {
     }
 });
 
-roteador.delete('/:id', async (requisicao,resposta) => {
+roteador.delete('/:id', async (requisicao, resposta) => {
     const dados = {
         id: requisicao.params.id,
         fornecedor: requisicao.fornecedor.id
@@ -145,7 +143,7 @@ roteador.delete('/:id', async (requisicao,resposta) => {
     resposta.status(204).end();
 });
 
-roteador.post("/:id/diminuir-estoque", async (requisicao,resposta,proximo) => {
+roteador.post("/:id/diminuir-estoque", async (requisicao, resposta, proximo) => {
     try {
         const produto = new Produto({
             id: requisicao.params.id,
@@ -168,4 +166,4 @@ roteador.post("/:id/diminuir-estoque", async (requisicao,resposta,proximo) => {
     }
 });
 
-export default roteador;
+module.exports = roteador;

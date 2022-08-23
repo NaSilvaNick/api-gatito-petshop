@@ -1,24 +1,25 @@
-import express from "express";
-import bodyParser from "body-parser";
-import config from "config";
-import roteador from "./rotas/fornecedores/index.js";
-import NaoEncontrado from "./erros/NaoEncontrado.js";
-import CampoInvalido from "./erros/CampoInvalido.js";
-import DadosNaoFornecidos from "./erros/DadosNaoFornecidos.js";
-import ValorNaoSuportado from "./erros/ValorNaoSuportado.js";
-import { formatosAceitos, SerializadorError } from "./Serializador.js";
-import roteador2 from "./rotas/fornecedores/index.v2.js";
+// const express = require("express")
+const app = require("express")()
+const bodyParser = require("body-parser")
+const config = require("config")
+const roteador = require("./rotas/fornecedores")
+const NaoEncontrado = require("./erros/NaoEncontrado")
+const CampoInvalido = require("./erros/CampoInvalido")
+const DadosNaoFornecidos = require("./erros/DadosNaoFornecidos")
+const ValorNaoSuportado = require("./erros/ValorNaoSuportado")
+const { formatosAceitos, SerializadorError } = require("./Serializador")
+const roteador2 = require("./rotas/fornecedores/index.v2")
 
-const app = express();
+// const app = express();
 
 app.use(bodyParser.json());
 
-app.use((requisicao,resposta,proximo) => {
+app.use((requisicao, resposta, proximo) => {
     let formatoRequisitado = requisicao.header('Accept');
 
-    if(formatoRequisitado === "*/*") { formatoRequisitado = "application/json"; }
+    if (formatoRequisitado === "*/*") { formatoRequisitado = "application/json"; }
 
-    if (formatosAceitos.indexOf(formatoRequisitado) === -1){
+    if (formatosAceitos.indexOf(formatoRequisitado) === -1) {
         resposta.status(406).end();
         return;
     }
@@ -27,7 +28,7 @@ app.use((requisicao,resposta,proximo) => {
     proximo();
 });
 
-app.use((requisicao,resposta,proximo) => {
+app.use((requisicao, resposta, proximo) => {
     resposta.set("Access-Control-Allow-Origin", "*");
     proximo();
 });
@@ -38,7 +39,7 @@ app.use("/api/v2/fornecedores", roteador2);
 app.use((error, requisicao, resposta, proximo) => {
     const serializador = new SerializadorError(resposta.getHeader("Content-Type"))
     let status = 500;
-    
+
     if (error instanceof NaoEncontrado) status = 404;
     if (error instanceof CampoInvalido || error instanceof DadosNaoFornecidos) status = 400;
     if (error instanceof ValorNaoSuportado) status = 406;
@@ -56,4 +57,4 @@ app.listen(
     () => console.log(`A API está funcionando na porta ${config.get("api.port")}`)
 )
 
-export default app;
+module.exports = app

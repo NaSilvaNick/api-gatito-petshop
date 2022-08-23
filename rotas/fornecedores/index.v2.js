@@ -1,12 +1,10 @@
-import express from "express";
-import TabelaFornecedor from "./TabelaFornecedor.js";
-import Fornecedor from "./Fornecedor.js";
-import { SerializadorFornecedor } from "../../Serializador.js";
-import roteadorProdutos from "./produtos/index.js";
+const roteador = require("express").Router()
+const TabelaFornecedor = require("./TabelaFornecedor")
+const Fornecedor = require("./Fornecedor")
+const { SerializadorFornecedor } = require("../../Serializador")
+const roteadorProdutos = require("./produtos")
 
-const roteador = express.Router();
-
-roteador.options("/", (requisicao,resposta) => {
+roteador.options("/", (requisicao, resposta) => {
     resposta
         .set("Access-Control-Allow-Methods", "GET")
         .set("Access-Control-Allow-Headers", "Content-Type")
@@ -14,7 +12,7 @@ roteador.options("/", (requisicao,resposta) => {
         .end();
 });
 
-roteador.get("/", async (requisicao,resposta) => {
+roteador.get("/", async (requisicao, resposta) => {
     const resultados = await TabelaFornecedor.listar()
     const serializador = new SerializadorFornecedor(resposta.getHeader('Content-Type'));
     resposta.status(200).send(
@@ -22,18 +20,18 @@ roteador.get("/", async (requisicao,resposta) => {
     );
 });
 
-const verificarFornecedor = async (requisicao,resposta,proximo) => {
+const verificarFornecedor = async (requisicao, resposta, proximo) => {
     try {
         const id = requisicao.params.idFornecedor;
         const fornecedor = new Fornecedor({ id: id });
         await fornecedor.carregar();
         requisicao.fornecedor = fornecedor;
         proximo()
-    } catch(error){
+    } catch (error) {
         proximo(error);
     }
 };
 
 roteador.use("/:idFornecedor/produtos", verificarFornecedor, roteadorProdutos);
 
-export default roteador;
+module.exports = roteador

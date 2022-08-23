@@ -1,18 +1,18 @@
-import TabelaProduto from "./TabelaProduto.js";
-import CampoInvalido from "../../../erros/CampoInvalido.js";
-import DadosNaoFornecidos from "../../../erros/DadosNaoFornecidos.js";
+const TabelaProduto = require("./TabelaProduto")
+const CampoInvalido = require("../../../erros/CampoInvalido")
+const DadosNaoFornecidos = require("../../../erros/DadosNaoFornecidos")
 
-export default class Produto {
-    constructor({id, titulo, preco, estoque, fornecedor, data_criacao, data_atualizacao, versao}){
-        Object.assign(this, {id, titulo, preco, estoque, fornecedor, data_criacao, data_atualizacao, versao})
+module.exports = class Produto {
+    constructor({ id, titulo, preco, estoque, fornecedor, data_criacao, data_atualizacao, versao }) {
+        Object.assign(this, { id, titulo, preco, estoque, fornecedor, data_criacao, data_atualizacao, versao })
     }
-    
-    validar () {
-        if(typeof this.titulo !== 'string' || this.titulo.length === 0) {
+
+    validar() {
+        if (typeof this.titulo !== 'string' || this.titulo.length === 0) {
             throw new CampoInvalido("Titulo");
         }
 
-        if(typeof this.preco !== 'number' || this.preco == 0){
+        if (typeof this.preco !== 'number' || this.preco == 0) {
             throw new CampoInvalido("Preço");
         }
     }
@@ -32,31 +32,31 @@ export default class Produto {
         this.versao = resultado.versao;
     }
 
-    apagar () {
-        return TabelaProduto.remover(this.id,this.fornecedor);
+    apagar() {
+        return TabelaProduto.remover(this.id, this.fornecedor);
     }
 
-    async carregar () {
+    async carregar() {
         const produto = await TabelaProduto.pegarPorId(this.id, this.fornecedor);
-        const {titulo, preco, estoque, fornecedor, data_criacao, data_atualizacao, versao} = produto;
-        Object.assign(this, {titulo, preco, estoque, fornecedor, data_criacao, data_atualizacao, versao});
+        const { titulo, preco, estoque, fornecedor, data_criacao, data_atualizacao, versao } = produto;
+        Object.assign(this, { titulo, preco, estoque, fornecedor, data_criacao, data_atualizacao, versao });
     }
 
-    atualizar () {
+    atualizar() {
         const dadosParaAtualizar = {}
 
         if (typeof this.titulo === 'string' && this.titulo.length > 0)
             dadosParaAtualizar.titulo = this.titulo;
 
-        if(typeof this.preco === 'number' && this.preco > 0)
+        if (typeof this.preco === 'number' && this.preco > 0)
             dadosParaAtualizar.preco = this.preco;
-    
-        if(typeof this.estoque === 'number')
+
+        if (typeof this.estoque === 'number')
             dadosParaAtualizar.estoque = this.estoque;
 
-        if(Object.keys(dadosParaAtualizar).length === 0)
+        if (Object.keys(dadosParaAtualizar).length === 0)
             throw new DadosNaoFornecidos();
-        
+
         return TabelaProduto.atualizar(
             {
                 id: this.id,
@@ -66,7 +66,7 @@ export default class Produto {
         );
     }
 
-    diminuirEstoque(){
-        return TabelaProduto.subtrair(this.id,this.fornecedor,'estoque',this.estoque);
+    diminuirEstoque() {
+        return TabelaProduto.subtrair(this.id, this.fornecedor, 'estoque', this.estoque);
     }
 }

@@ -1,5 +1,5 @@
-import Sequelize from "sequelize";
-import instancia from "../../banco-de-dados/index.js"
+const Sequelize = require("sequelize")
+const instancia = require("../../banco-de-dados")
 
 const colunas = {
     empresa: {
@@ -25,4 +25,4 @@ const opcoes = {
     version: "versao"
 }
 
-export default instancia.define("fornecedor", colunas, opcoes);
+module.exports = instancia.define("fornecedor", colunas, opcoes);

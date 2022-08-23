@@ -1,5 +1,5 @@
-import Sequelize from "sequelize";
-import config from "config";
+const Sequelize = require("sequelize")
+const config = require("config")
 
 const instancia = new Sequelize(
     config.get("mysql.database"),
@@ -11,4 +11,4 @@ const instancia = new Sequelize(
     }
 );
 
-export default instancia;
+module.exports = instancia;

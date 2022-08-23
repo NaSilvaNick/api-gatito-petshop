@@ -1,28 +1,28 @@
-import ModeloTabelaFornecedor from "./ModeloTabelaFornecedor.js";
-import NaoEncontrado from "../../erros/NaoEncontrado.js";
+const ModeloTabelaFornecedor = require("./ModeloTabelaFornecedor")
+const NaoEncontrado = require("../../erros/NaoEncontrado")
 
-export default {
+module.exports = {
     listar() {
-        return ModeloTabelaFornecedor.findAll({ raw: true});
+        return ModeloTabelaFornecedor.findAll({ raw: true });
     },
     inserir(fornecedor) {
         return ModeloTabelaFornecedor.create(fornecedor);
     },
     async pegarPorId(id) {
-        const encontrado = await ModeloTabelaFornecedor.findOne({ where: { id: id }});
+        const encontrado = await ModeloTabelaFornecedor.findOne({ where: { id: id } });
 
-        if(!encontrado) throw new NaoEncontrado("Fornecedor");
+        if (!encontrado) throw new NaoEncontrado("Fornecedor");
 
         return encontrado;
     },
 
-    atualizar (id, dadosParaAtualizar) {
+    atualizar(id, dadosParaAtualizar) {
         return ModeloTabelaFornecedor.update(
-            dadosParaAtualizar, { where: { id: id }}
+            dadosParaAtualizar, { where: { id: id } }
         )
     },
 
-    remover (id) {
-        return ModeloTabelaFornecedor.destroy({ where: { id: id }});
+    remover(id) {
+        return ModeloTabelaFornecedor.destroy({ where: { id: id } });
     }
 }

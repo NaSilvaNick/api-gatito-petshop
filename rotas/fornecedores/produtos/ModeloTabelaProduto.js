@@ -1,6 +1,6 @@
-import Sequelize from "sequelize";
-import instancia from "../../../banco-de-dados/index.js";
-import ModeloTabelaFornecedor from "../ModeloTabelaFornecedor.js";
+const Sequelize = require("sequelize")
+const instancia = require("../../../banco-de-dados")
+const ModeloTabelaFornecedor = require("../ModeloTabelaFornecedor")
 
 const colunas = {
     titulo: {
@@ -35,4 +35,4 @@ const opcoes = {
     version: "versao"
 }
 
-export default instancia.define("produto", colunas, opcoes);
+module.exports = instancia.define("produto", colunas, opcoes);

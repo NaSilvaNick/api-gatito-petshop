@@ -1,9 +1,9 @@
-import Modelo from "./ModeloTabelaProduto.js";
-import instancia from "../../../banco-de-dados/index.js";
-import NaoEncontrado from "../../../erros/NaoEncontrado.js";
+const Modelo = require("./ModeloTabelaProduto")
+const instancia = require("../../../banco-de-dados")
+const NaoEncontrado = require("../../../erros/NaoEncontrado")
 
-export default {
-    listar (idFornecedor){
+module.exports = {
+    listar(idFornecedor) {
         return Modelo.findAll({
             where: {
                 fornecedor: idFornecedor
@@ -11,10 +11,10 @@ export default {
             raw: true
         });
     },
-    inserir(dados){
+    inserir(dados) {
         return Modelo.create(dados);
     },
-    remover (idProduto, idFornecedor) {
+    remover(idProduto, idFornecedor) {
         return Modelo.destroy({
             where: {
                 id: idProduto,
@@ -31,13 +31,13 @@ export default {
             raw: true
         });
 
-        if(!encontrado) {
+        if (!encontrado) {
             throw new NaoEncontrado("Produto");
         }
 
         return encontrado;
     },
-    atualizar(dadosDoProduto,dadosParaAtualizar){
+    atualizar(dadosDoProduto, dadosParaAtualizar) {
         return Modelo.update(
             dadosParaAtualizar,
             {
@@ -45,7 +45,7 @@ export default {
             }
         );
     },
-    subtrair(idProduto, idFornecedor, campo, quantidade){
+    subtrair(idProduto, idFornecedor, campo, quantidade) {
         return instancia.transaction(async transacao => {
             const produto = await Modelo.findOne({
                 where: {

@@ -1,12 +1,10 @@
-import express from "express";
-import TabelaFornecedor from "./TabelaFornecedor.js";
-import Fornecedor from "./Fornecedor.js";
-import { SerializadorFornecedor } from "../../Serializador.js";
-import roteadorProdutos from "./produtos/index.js";
+const roteador = require("express").Router()
+const TabelaFornecedor = require("./TabelaFornecedor")
+const Fornecedor = require("./Fornecedor")
+const { SerializadorFornecedor } = require("../../Serializador")
+const roteadorProdutos = require("./produtos")
 
-const roteador = express.Router();
-
-roteador.options("/", (requisicao,resposta) => {
+roteador.options("/", (requisicao, resposta) => {
     resposta
         .set("Access-Control-Allow-Methods", "GET, POST")
         .set("Access-Control-Allow-Headers", "Content-Type")
@@ -14,7 +12,7 @@ roteador.options("/", (requisicao,resposta) => {
         .end();
 });
 
-roteador.options("/:idFornecedor", (requisicao,resposta) => {
+roteador.options("/:idFornecedor", (requisicao, resposta) => {
     resposta
         .set("Access-Control-Allow-Methods", "GET, PUT, DELETE")
         .set("Access-Control-Allow-Headers", "Content-Type")
@@ -22,7 +20,7 @@ roteador.options("/:idFornecedor", (requisicao,resposta) => {
         .end();
 });
 
-roteador.get("/", async (requisicao,resposta) => {
+roteador.get("/", async (requisicao, resposta) => {
     const resultados = await TabelaFornecedor.listar()
     const serializador = new SerializadorFornecedor(
         resposta.getHeader('Content-Type'), ['empresa']);
@@ -31,14 +29,14 @@ roteador.get("/", async (requisicao,resposta) => {
     );
 });
 
-roteador.get("/:idFornecedor", async (requisicao,resposta,proximo) => {
+roteador.get("/:idFornecedor", async (requisicao, resposta, proximo) => {
     try {
         const id = requisicao.params.idFornecedor;
         const serializador = new SerializadorFornecedor(
             resposta.getHeader('Content-Type'),
             ['email', 'empresa', 'data_criacao', 'data_atualizacao', 'versao']
         );
-        const fornecedor = new Fornecedor({id:id});
+        const fornecedor = new Fornecedor({ id: id });
         await fornecedor.carregar();
         resposta.status(200).send(
             serializador.serializar(fornecedor)
@@ -48,7 +46,7 @@ roteador.get("/:idFornecedor", async (requisicao,resposta,proximo) => {
     }
 });
 
-roteador.post("/", async (requisicao,resposta,proximo) => {
+roteador.post("/", async (requisicao, resposta, proximo) => {
     try {
         const dadosRecebidos = requisicao.body;
         const serializador = new SerializadorFornecedor(
@@ -57,13 +55,13 @@ roteador.post("/", async (requisicao,resposta,proximo) => {
         await fornecedor.criar();
         resposta.status(201).send(
             serializador.serializar(fornecedor)
-        );    
+        );
     } catch (error) {
         proximo(error);
     }
 });
 
-roteador.put("/:idFornecedor", async (requisicao,resposta,proximo) => {
+roteador.put("/:idFornecedor", async (requisicao, resposta, proximo) => {
     try {
         const id = requisicao.params.idFornecedor;
         const dadosRecebidos = requisicao.body;
@@ -76,10 +74,10 @@ roteador.put("/:idFornecedor", async (requisicao,resposta,proximo) => {
     }
 });
 
-roteador.delete("/:idFornecedor", async (requisicao,resposta,proximo) => {
+roteador.delete("/:idFornecedor", async (requisicao, resposta, proximo) => {
     try {
         const id = requisicao.params.idFornecedor;
-        const fornecedor = new Fornecedor({id:id});
+        const fornecedor = new Fornecedor({ id: id });
         await fornecedor.carregar();
         await fornecedor.remover();
         resposta.status(204).end();
@@ -88,18 +86,18 @@ roteador.delete("/:idFornecedor", async (requisicao,resposta,proximo) => {
     }
 });
 
-const verificarFornecedor = async (requisicao,resposta,proximo) => {
+const verificarFornecedor = async (requisicao, resposta, proximo) => {
     try {
         const id = requisicao.params.idFornecedor;
         const fornecedor = new Fornecedor({ id: id });
         await fornecedor.carregar();
         requisicao.fornecedor = fornecedor;
         proximo()
-    } catch(error){
+    } catch (error) {
         proximo(error);
     }
 };
 
 roteador.use("/:idFornecedor/produtos", verificarFornecedor, roteadorProdutos);
 
-export default roteador;
+module.exports = roteador
