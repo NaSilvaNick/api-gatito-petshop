@@ -1,0 +1,11 @@
+{
+  "mysql": {
+    "user": "PETSHOP_MYSQL_USUARIO",
+    "password": "PETSHOP_MYSQL_SENHA",
+    "host": "PETSHOP_MYSQL_HOST",
+    "dialect": "mysql"
+  },
+  "api": {
+    "port": "PETSHOP_PORTA_API"
+  }
+}
