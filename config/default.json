@@ -1,6 +1,6 @@
 {
   "mysql": {
-    "database": "petshop-gatito",
+    "database": "petshop",
     "user": "root",
     "password": "root",
     "host": "127.0.0.1:3600",
