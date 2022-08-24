@@ -1,64 +1,64 @@
-const Modelo = require("./ModeloTabelaProduto");
-const instancia = require("../../../banco-de-dados");
-const NaoEncontrado = require("../../../erros/NaoEncontrado");
+const Modelo = require('./ModeloTabelaProduto')
+const instancia = require('../../../banco-de-dados')
+const NaoEncontrado = require('../../../erros/NaoEncontrado')
 
 module.exports = {
-	listar(idFornecedor) {
-		return Modelo.findAll({
-			where: {
-				fornecedor: idFornecedor
-			},
-			raw: true
-		});
-	},
-	inserir(dados) {
-		return Modelo.create(dados);
-	},
-	remover(idProduto, idFornecedor) {
-		return Modelo.destroy({
-			where: {
-				id: idProduto,
-				fornecedor: idFornecedor
-			}
-		});
-	},
-	async pegarPorId(id, idFornecedor) {
-		const encontrado = await Modelo.findOne({
-			where: {
-				id: id,
-				fornecedor: idFornecedor
-			},
-			raw: true
-		});
+  listar (idFornecedor) {
+    return Modelo.findAll({
+      where: {
+        fornecedor: idFornecedor
+      },
+      raw: true
+    })
+  },
+  inserir (dados) {
+    return Modelo.create(dados)
+  },
+  remover (idProduto, idFornecedor) {
+    return Modelo.destroy({
+      where: {
+        id: idProduto,
+        fornecedor: idFornecedor
+      }
+    })
+  },
+  async pegarPorId (id, idFornecedor) {
+    const encontrado = await Modelo.findOne({
+      where: {
+        id,
+        fornecedor: idFornecedor
+      },
+      raw: true
+    })
 
-		if (!encontrado) {
-			throw new NaoEncontrado("Produto");
-		}
+    if (!encontrado) {
+      throw new NaoEncontrado('Produto')
+    }
 
-		return encontrado;
-	},
-	atualizar(dadosDoProduto, dadosParaAtualizar) {
-		return Modelo.update(
-			dadosParaAtualizar,
-			{
-				where: dadosDoProduto
-			}
-		);
-	},
-	subtrair(idProduto, idFornecedor, campo, quantidade) {
-		return instancia.transaction(async () => {
-			const produto = await Modelo.findOne({
-				where: {
-					id: idProduto,
-					fornecedor: idFornecedor
-				}
-			});
+    return encontrado
+  },
+  atualizar (dadosDoProduto, dadosParaAtualizar) {
+    return Modelo.update(
+      dadosParaAtualizar,
+      {
+        where: dadosDoProduto
+      }
+    )
+  },
+  subtrair (idProduto, idFornecedor, campo, quantidade) {
+    return instancia.transaction(async () => {
+      const produto = await Modelo.findOne({
+        where: {
+          id: idProduto,
+          fornecedor: idFornecedor
+        }
+      })
 
-			produto[campo] = quantidade;
+      produto[campo] = quantidade
 
-			await produto.save();
+      await produto.save()
 
-			return produto;
-		});
-	}
-};
+      return produto
+    })
+  }
+}
