@@ -1,12 +1,12 @@
 {
   "mysql": {
     "database": "petshop",
-    "user": "root",
-    "password": "root",
-    "host": "127.0.0.1:3600",
+    "user": "PETSHOP_MYSQL_USUARIO",
+    "password": "PETSHOP_MYSQL_SENHA",
+    "host": "PETSHOP_MYSQL_HOST",
     "dialect": "mysql"
   },
   "api": {
-    "port": 3000
+    "port": "PETSHOP_PORTA_API"
   }
 }
