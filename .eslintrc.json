@@ -25,5 +25,9 @@
             "error",
             "always"
         ]
-    }
+    },
+    "ignorePatterns": [
+        "*.test.js",
+        "jest.*"
+    ]
 }
